@@ -6,10 +6,6 @@
 
 .. title:: Evidence
 
-
-.. _haldol:
-
-
 .. raw:: html
 
     <center>
@@ -22,6 +18,10 @@
     </b>
     </center>
     <br>
+
+
+.. _haldol:
+
 
 **HALDOL**
 

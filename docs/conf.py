@@ -137,11 +137,13 @@ rst_prolog = '''.. image:: genocide.png
 
 rst_epilog = '''.. raw:: html
 
-     <br>
-     <center>
-     <b>
+    <br>
+    <br>
+    <br>
+    <center>
+    <b>
 
-:ref:`home <about>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>` - :ref:`about <reconsider>`
+:ref:`reconsider <reconsider>` - :ref:`request <request>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>` - :ref:`manual <manual>` - :ref:`source <source>`
 
 
 .. raw:: html
