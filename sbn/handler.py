@@ -3,16 +3,7 @@
 # pylint: disable=C,R,W0212,E0402
 
 
-"""
-event handler
-
-This event handler uses callbacks to react to events put to the handler.
-Every callback gets run in it's own thread just to escape the "it must not
-block" problem async coding delivers. It does deferred exception handling to
-not have the main loop exiting on an raised exception and uses a bus (called
-fleet) to do the output to.
-
-"""
+"event handler"
 
 
 import queue
@@ -43,14 +34,14 @@ class Handler(Object):
         self.queue    = queue.Queue()
         self.stopped  = threading.Event()
 
-    def callback(self, evt) -> None:
+    def callback(self, evt):
         func = getattr(self.cbs, evt.type, None)
         if not func:
             evt.ready()
             return
         evt._thr = launch(func, evt)
  
-    def loop(self) -> None:
+    def loop(self):
         while not self.stopped.is_set():
             try:
                 self.callback(self.poll())
@@ -60,16 +51,16 @@ class Handler(Object):
     def poll(self):
         return self.queue.get()
 
-    def put(self, evt) -> None:
+    def put(self, evt):
         self.queue.put_nowait(evt)
 
-    def register(self, typ, cbs) -> None:
+    def register(self, typ, cbs):
         setattr(self.cbs, typ, cbs)
 
-    def start(self) -> None:
+    def start(self):
         launch(self.loop)
 
-    def stop(self) -> None:
+    def stop(self):
         self.stopped.set()
 
 
@@ -87,10 +78,10 @@ class Event(Default):
     def ready(self):
         self._ready.set()
 
-    def reply(self, txt) -> None:
+    def reply(self, txt):
         self.result.append(txt)
 
-    def show(self) -> None:
+    def show(self):
         for txt in self.result:
             bot = Fleet.byorig(self.orig) or Fleet.first()
             if bot:

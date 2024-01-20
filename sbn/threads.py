@@ -47,11 +47,11 @@ class Thread(threading.Thread):
         for k in dir(self):
             yield k
 
-    def join(self, timeout=None) -> type:
+    def join(self, timeout=None):
         super().join(timeout)
         return self._result
 
-    def run(self) -> None:
+    def run(self):
         func, args = self.queue.get()
         try:
             self._result = func(*args)
@@ -72,11 +72,11 @@ class Timer(Object):
         self.state = {}
         self.timer = None
 
-    def run(self) -> None:
+    def run(self):
         self.state["latest"] = time.time()
         launch(self.func, *self.args)
 
-    def start(self) -> None:
+    def start(self):
         timer = threading.Timer(self.sleep, self.run)
         timer.name   = self.name
         timer.daemon = True
@@ -88,14 +88,14 @@ class Timer(Object):
         timer.start()
         self.timer   = timer
 
-    def stop(self) -> None:
+    def stop(self):
         if self.timer:
             self.timer.cancel()
 
 
 class Repeater(Timer):
 
-    def run(self) -> Thread:
+    def run(self):
         thr = launch(self.start)
         super().run()
         return thr
@@ -108,7 +108,7 @@ def launch(func, *args, **kwargs):
     return thread
 
 
-def name(obj) -> str:
+def name(obj):
     typ = type(obj)
     if isinstance(typ, types.ModuleType):
         return obj.__name__

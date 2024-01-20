@@ -37,14 +37,14 @@ class Storage(Object):
     wd = ""
 
     @staticmethod
-    def add(clz) -> None:
+    def add(clz):
         if not clz:
             return
         name = str(clz).split()[1][1:-2]
         Storage.classes[name] = clz
 
     @staticmethod
-    def fns(mtc="") -> []:
+    def fns(mtc=""):
         dname = ''
         pth = Storage.store(mtc)
         for rootdir, dirs, _files in os.walk(pth, topdown=False):
@@ -57,7 +57,7 @@ class Storage(Object):
                             yield strip(os.path.join(ddd, fll))
 
     @staticmethod
-    def long(name) -> str:
+    def long(name):
         split = name.split(".")[-1].lower()
         res = name
         for named in Storage.classes:
@@ -76,15 +76,15 @@ class Storage(Object):
         cdir(os.path.join(Storage.wd, "store", ""))
 
     @staticmethod
-    def store(pth="") -> str:
+    def store(pth=""):
         return os.path.join(Storage.wd, "store", pth)
 
     @staticmethod
-    def types() -> []:
+    def types():
         return os.listdir(Storage.store())
 
 
-def find(mtc, selector=None, index=None, deleted=False) -> []:
+def find(mtc, selector=None, index=None, deleted=False):
     clz = Storage.long(mtc)
     nr = -1
     for fnm in sorted(Storage.fns(clz), key=fntime):
@@ -100,7 +100,7 @@ def find(mtc, selector=None, index=None, deleted=False) -> []:
         yield (fnm, obj)
 
 
-def fntime(daystr) -> float:
+def fntime(daystr):
     daystr = daystr.replace('_', ':')
     datestr = ' '.join(daystr.split(os.sep)[-2:])
     if '.' in datestr:
@@ -113,23 +113,23 @@ def fntime(daystr) -> float:
     return timed
 
 
-def strip(pth, nmr=3) -> str:
+def strip(pth, nmr=3):
     return os.sep.join(pth.split(os.sep)[-nmr:])
 
 
-def ident(obj) -> str:
+def ident(obj):
     return os.path.join(
                         fqn(obj),
                         os.path.join(*str(datetime.datetime.now()).split())
                        )
 
-def fetch(obj, pth) -> None:
+def fetch(obj, pth):
     pth2 = Storage.store(pth)
     read(obj, pth2)
     return strip(pth)
 
 
-def last(obj, selector=None) -> None:
+def last(obj, selector=None):
     if selector is None:
         selector = {}
     result = sorted(
@@ -142,7 +142,7 @@ def last(obj, selector=None) -> None:
         return inp[0]
 
 
-def search(obj, selector) -> bool:
+def search(obj, selector):
     res = False
     if not selector:
         return True
@@ -160,7 +160,7 @@ def search(obj, selector) -> bool:
     return res
 
 
-def sync(obj, pth=None) -> str:
+def sync(obj, pth=None):
     if pth is None:
         pth = ident(obj)
     pth2 = Storage.store(pth)

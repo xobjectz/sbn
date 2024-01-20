@@ -74,7 +74,7 @@ def extract_date(daystr):
             return res
 
 
-def fntime(daystr) -> float:
+def fntime(daystr):
     daystr = daystr.replace('_', ':')
     datestr = ' '.join(daystr.split(os.sep)[-2:])
     if '.' in datestr:
@@ -137,7 +137,7 @@ def get_time(txt):
     return target
 
 
-def laps(seconds, short=True) -> str:
+def laps(seconds, short=True):
     txt = ""
     nsec = float(seconds)
     if nsec < 1:
@@ -176,7 +176,7 @@ def laps(seconds, short=True) -> str:
     return txt
 
 
-def parse_command(obj, txt=None) -> None:
+def parse_command(obj, txt=None):
     args = []
     obj.args    = obj.args or []
     obj.cmd     = obj.cmd or ""
@@ -251,7 +251,7 @@ def parse_time(txt):
     return target
 
 
-def spl(txt) -> []:
+def spl(txt):
     try:
         res = txt.split(',')
     except (TypeError, ValueError):

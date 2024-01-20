@@ -24,7 +24,7 @@ from .. import byorig, debug, last, launch, sync
 Error.filter = ["PING", "PONG", "PRIVMSG"]
 
 
-NAME = "sbn"
+NAME = __file__.split(os.sep)[-3]
 
 
 saylock = _thread.allocate_lock()

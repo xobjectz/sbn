@@ -64,7 +64,7 @@ class Console(Client):
         Client.callback(self, evt)
         evt.wait()
 
-    def poll(self) -> Event:
+    def poll(self):
         evt = Event()
         evt.orig = object.__repr__(self)
         evt.txt = input("> ")
@@ -171,7 +171,7 @@ def main():
         return cmnd(Cfg.otxt)
 
 
-def wrap(func) -> None:
+def wrap(func):
     old2 = None
     try:
         old2 = termios.tcgetattr(sys.stdin.fileno())

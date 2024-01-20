@@ -26,7 +26,7 @@ class Command(Object):
     cmds = Object()
 
     @staticmethod
-    def add(func) -> None:
+    def add(func):
         setattr(Command.cmds, func.__name__, func)
 
     @staticmethod
