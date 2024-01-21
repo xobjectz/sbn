@@ -28,13 +28,10 @@ def __dir__():
     return (
         'Cfg',
         'Console',
-        'cmnd',
         'daemon',
         'daemoned',
-        'forever',
         'main',
         'privileges',
-        'scan',
         'wrap',
         'wrapped'
     )
@@ -118,7 +115,7 @@ def main():
     parse_command(Cfg, " ".join(sys.argv[1:]))
     if "x" in Cfg.opts:
         Cfg.mod += ",cmd,flt,mod,mre,pwd,req,thr"
-    elif "a" in Cfg.opts:
+    else:
         Cfg.mod = ",".join(modules.__dir__())
     if "v" in Cfg.opts:
         dte = time.ctime(time.time()).replace("  ", " ")
