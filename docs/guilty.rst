@@ -29,7 +29,7 @@
 
 
 .. image:: informed.jpg
-    :width: 100%
+    :height: 8cm
 
 .. raw:: html
 
