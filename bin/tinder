@@ -21,12 +21,9 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn.defines import Client, Command, Default, Error, Event, Object
-from sbn.defines import Storage
-from sbn.defines import keys, laps, launch, parse_command, spl
-
-
-from sbn import modules as mods
+from sbn import Client, Command, Default, Error, Event, Object
+from sbn import Storage, modules, scan
+from sbn import keys, laps, launch, parse_command, spl
 
 
 STARTTIME = time.time()
@@ -34,7 +31,7 @@ STARTTIME = time.time()
 
 Cfg = Default()
 Cfg.debug = True
-Cfg.mod =  ",".join(mods.__dir__())
+Cfg.mod =  ",".join(modules.__dir__())
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
@@ -107,32 +104,10 @@ def payload(clt) -> None:
                 evt.orig = object.__repr__(clt)
                 evt.txt = cmd + " " + ex
                 evt.type = "command"
-                if "t" in Cfg.opts:
-                    Command.threaded(evt)
-                else:
-                    clt.put(evt)
+                clt.put(evt)
                 events.append(evt)
                 nmr += 1
         return nmr
-
-
-def scan(pkg, modstr) -> []:
-    for modname in spl(modstr):
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        for key, cmd in inspect.getmembers(module, inspect.isfunction):
-            if key.startswith("cb"):
-                continue
-            if 'event' in cmd.__code__.co_varnames:
-                Command.add(cmd)
-        for key, clz in inspect.getmembers(module, inspect.isclass):
-            if key.startswith("cb"):
-                continue
-            if not issubclass(clz, Object):
-                continue
-            Storage.add(clz)
-        yield module
 
 
 def wrap(func) -> None:
@@ -162,7 +137,7 @@ def main() -> None:
     global nrcommand
     global percall
     Error.output = cprint
-    for mod in scan(mods, Cfg.mod):
+    for mod in scan(modules, Cfg.mod):
         mod.DEBUG = True
     nrs = Cfg.index or 1
     nrcommand = len(Command.cmds) or 1
@@ -175,6 +150,7 @@ def main() -> None:
     endtime = time.time()
     lap = laps(endtime - STARTTIME)
     percall = (endtime - STARTTIME)/(nrs * nrcommand)
+
 
 if __name__ == "__main__":
     if os.path.exists(Storage.wd):

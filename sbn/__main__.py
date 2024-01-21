@@ -21,7 +21,7 @@ sys.path.insert(0, ".")
 
 
 from . import Client, Command, Default, Error, Event, Object, Storage
-from . import cdir, debug, launch, parse_command, spl
+from . import cdir, cmnd, debug, forever, launch, parse_command, spl, scan
 
 
 def __dir__():
@@ -75,14 +75,6 @@ class Console(Client):
         print(txt)
 
 
-def cmnd(txt):
-    evn = Event()
-    evn.txt = txt
-    Command.handle(evn)
-    evn.wait()
-    return evn
-
-
 def daemon(pidfile, verbose=False):
     pid = os.fork()
     if pid != 0:
@@ -114,40 +106,11 @@ def daemoned():
     forever()
 
 
-def forever():
-    while 1:
-        try:
-            time.sleep(1.0)
-        except (KeyboardInterrupt, EOFError):
-            _thread.interrupt_main()
-
-
 def privileges(username):
     pwnam = pwd.getpwnam(username)
     os.setgid(pwnam.pw_gid)
     os.setuid(pwnam.pw_uid)
 
-
-def scan(pkg, modstr, initer=False, wait=True) -> []:
-    mds = []
-    for modname in spl(modstr):
-        module = getattr(pkg, modname, None)
-        if not module:
-            continue
-        for _key, cmd in inspect.getmembers(module, inspect.isfunction):
-            if 'event' in cmd.__code__.co_varnames:
-                Command.add(cmd)
-        for _key, clz in inspect.getmembers(module, inspect.isclass):
-            if not issubclass(clz, Object):
-                continue
-            Storage.add(clz)
-        if initer and "init" in dir(module):
-            module._thr = launch(module.init, name=f"init {modname}")
-            mds.append(module)
-    if wait and initer:
-        for mod in mds:
-            mod._thr.join()
-    return mds
 
 
 def main():

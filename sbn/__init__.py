@@ -45,14 +45,17 @@ def __dir__():
         'Storage',
         'byorig',
         'cdir',
+        'cmnd',
         'fetch',
         'find',
         'fns',
-        'fntime',
+        'fntime'
+        'forever',
         'ident',
         'launch',
         'last',
         'parse_command',
+        'scan',
         'sync',
         'Storage',
     ) + __object__()
