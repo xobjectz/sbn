@@ -17,9 +17,6 @@ import time
 import _thread
 
 
-sys.path.insert(0, ".")
-
-
 from . import Client, Command, Default, Error, Event, Object, Storage
 from . import cdir, cmnd, debug, forever, launch, parse_command, spl, scan
 
@@ -109,29 +106,6 @@ def privileges(username):
     os.setuid(pwnam.pw_uid)
 
 
-
-def main():
-    Storage.skel()
-    parse_command(Cfg, " ".join(sys.argv[1:]))
-    if "x" in Cfg.opts:
-        Cfg.mod += ",cmd,flt,mod,mre,pwd,req,thr"
-    else:
-        Cfg.mod = ",".join(modules.__dir__())
-    if "v" in Cfg.opts:
-        dte = time.ctime(time.time()).replace("  ", " ")
-        debug(f"{Cfg.name.upper()} started {Cfg.opts.upper()} started {dte}")
-    if "d" in Cfg.opts:
-        daemoned()
-    csl = Console()
-    if "c" in Cfg.opts:
-        scan(modules, Cfg.mod, True, True)
-        csl.start()
-        forever()
-    if Cfg.otxt:
-        scan(modules, Cfg.mod)
-        return cmnd(Cfg.otxt)
-
-
 def wrap(func):
     old2 = None
     try:
@@ -145,6 +119,28 @@ def wrap(func):
     finally:
         if old2:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
+
+
+def main():
+    Storage.skel()
+    parse_command(Cfg, " ".join(sys.argv[1:]))
+    if "x" in Cfg.opts:
+        Cfg.mod += ",cmd,flt,mod,mre,pwd,req,thr"
+    else:
+        Cfg.mod = ",".join(modules.__dir__())
+    if "v" in Cfg.opts:
+        dte = time.ctime(time.time()).replace("  ", " ")
+        debug(f"{Cfg.name.upper()} {Cfg.opts.upper()} started {dte}")
+    if "d" in Cfg.opts:
+        daemoned()
+    csl = Console()
+    if "c" in Cfg.opts:
+        scan(modules, Cfg.mod, True, True)
+        csl.start()
+        forever()
+    if Cfg.otxt:
+        scan(modules, Cfg.mod)
+        return cmnd(Cfg.otxt)
 
 
 def wrapped():
