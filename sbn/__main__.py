@@ -44,8 +44,7 @@ __all__ = __dir__()
 
 
 Cfg         = Default()
-Cfg.mod     = "cmd,irc,log,mdl,mod,mre,pwd,req,rss,tdo,thr"
-Cfg.name    = "sbn"
+Cfg.name    = __file__.split(os.sep)[-2]
 Cfg.wd      = os.path.expanduser(f"~/.{Cfg.name}")
 Cfg.pidfile = os.path.join(Cfg.wd, f"{Cfg.name}.pid")
 Cfg.user    = getpass.getuser()
@@ -154,7 +153,9 @@ def scan(pkg, modstr, initer=False, wait=True) -> []:
 def main():
     Storage.skel()
     parse_command(Cfg, " ".join(sys.argv[1:]))
-    if "a" in Cfg.opts:
+    if "x" in Cfg.opts:
+        Cfg.mod += ",cmd,flt,mod,mre,pwd,req,thr"
+    elif "a" in Cfg.opts:
         Cfg.mod = ",".join(modules.__dir__())
     if "v" in Cfg.opts:
         dte = time.ctime(time.time()).replace("  ", " ")

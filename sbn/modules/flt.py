@@ -6,11 +6,11 @@
 "fleet"
 
 
-from ..brokers import Fleet
+from .. import Fleet, name
 
 
 def flt(event):
     try:
         event.reply(Fleet.objs[int(event.args[0])])
     except (IndexError, ValueError):
-        event.reply(",".join(Fleet.objs))
+        event.reply(",".join([name(x).split(".")[-1] for x in Fleet.objs]))
