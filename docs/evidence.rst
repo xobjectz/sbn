@@ -11,7 +11,7 @@
     <center>
     <b>
 
-**E V I D E N C E**
+**EVIDENCE**
 
 .. raw:: html
 

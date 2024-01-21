@@ -14,7 +14,7 @@
     <center>
     <b>
 
-**R E C O N S I D E R**
+**RECONSIDER**
 
 .. raw:: html
 

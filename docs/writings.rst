@@ -13,7 +13,7 @@
     <center>
     <b>
 
-**W R I T I N G S**
+**WRITINGS**
 
 .. raw:: html
 

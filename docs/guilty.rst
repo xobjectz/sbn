@@ -13,7 +13,7 @@
     <center>
     <b>
 
-**G U I L T Y**
+**GUILTY**
 
 .. raw:: html
 

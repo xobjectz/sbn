@@ -13,7 +13,7 @@
     <center>
     <b>
 
-**M A N U A L**
+**MANUAL**
 
 .. raw:: html
 
@@ -57,7 +57,7 @@
     physical (contracted muscles) and
     mental (make people hallucinate)
     torture and kills members of the
-    victim groups. 
+    victim groups :ref:`. <source>`
 
     **SBN** contains :ref:`correspondence <writings>`
     with the International Criminal Court,
