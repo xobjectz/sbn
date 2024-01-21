@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
-# pylint: disable=R,C,W0718,W0611,W0613,E0102,E0401,E0611,W0201,W0702
+# pylint: disable=R,C,W0718,W0611,W0613,E0102,E0401,E0611,W0201,W0702,W0603
 
 
 "created clients"
@@ -143,7 +143,6 @@ def main() -> None:
     nrcommand = len(Command.cmds) or 1
     cli = CLI()
     cli.start()
-    waiters = []
     for _nr in range(nrs):
         launch(payload, cli)
     consume(events)
