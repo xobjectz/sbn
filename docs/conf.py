@@ -150,6 +150,7 @@ rst_epilog = '''.. raw:: html
 
     </b>
     </center>
+
 '''
 
 autosummary_generate = True

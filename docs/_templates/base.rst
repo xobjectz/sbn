@@ -5,14 +5,14 @@
 
 .. raw:: html
 
+    <br>
     <center>
-    <h3>
 
-{{ fullname }}
+**{{ fullname }}**
 
 .. raw:: html
 
-    </h3>
+    <br>
     </center>
 
 .. auto{{ objtype }}:: {{ fullname }}
