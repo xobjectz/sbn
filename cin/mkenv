@@ -11,7 +11,7 @@ import os
 import sys
 
 
-NAME = "zelf"
+NAME = "sbn"
 
 
 def popen(txt):
@@ -20,7 +20,7 @@ def popen(txt):
         sys.stdout.flush()
 
 
-popen("bin/clean -f")
-popen("bin/builder")
+popen("cin/clean -f")
+popen("cin/builder")
 popen("python3 -mvirtualenv --system-site-packages env")
 popen("env/bin/pip3 install %s -f dist --upgrade" % NAME)
