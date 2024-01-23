@@ -65,9 +65,11 @@ def forever():
             _thread.interrupt_main()
 
 
-def scan(pkg, modstr, initer=False, wait=True) -> []:
+def scan(pkg, modstr, initer=False, disable="", wait=True) -> []:
     mds = []
     for modname in spl(modstr):
+        if modname in spl(disable):
+            continue
         module = getattr(pkg, modname, None)
         if not module:
             continue

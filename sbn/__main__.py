@@ -135,11 +135,11 @@ def main():
         daemoned()
     csl = Console()
     if "c" in Cfg.opts:
-        scan(modules, Cfg.mod, True, True)
+        scan(modules, Cfg.mod, True, Cfg.sets.dis, True)
         csl.start()
         forever()
     if Cfg.otxt:
-        scan(modules, Cfg.mod)
+        scan(modules, Cfg.mod, disable=Cfg.sets.dis)
         return cmnd(Cfg.otxt)
 
 
