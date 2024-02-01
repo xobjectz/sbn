@@ -8,6 +8,7 @@
 .. title:: About
 
 
+
 .. raw:: html
 
     <center>
@@ -43,6 +44,7 @@ stop), the prosecutor decided to call it a "no basis to proceed".
 
 It requires a :ref:`basis to prosecute <reconsider>` of the prosecutor
 to get the king in his cell and his genocide, thereby, stopped.
+
 
 .. raw:: html
 
