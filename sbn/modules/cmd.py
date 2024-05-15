@@ -1,13 +1,13 @@
 # This file is placed in the Public Domain.
-#
-# pylint: disable=C,R,E0402
 
 
 "list of commands"
 
 
-from .. import Command
+
+from ..client import Command
 
 
 def cmd(event):
-    event.reply(",".join(sorted(Command.cmds)))
+    "list commands."
+    event.reply(",".join(sorted(list(Command.cmds))))

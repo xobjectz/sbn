@@ -1,6 +1,4 @@
 # This file is placed in the Public Domain.
-#
-# pylint: disable=C,R,E0402
 
 
 "todo list"
@@ -9,15 +7,20 @@
 import time
 
 
-from .. import Object, fntime, find, laps, sync
+from ..client import laps
+from ..disk   import sync
+from ..find   import fntime, find
+from ..object import Object
 
 
 class NoDate(Exception):
 
-    pass
+    "no matching date"
 
 
-class Todo(Object):
+class Todo(Object): # pylint: disable=R0903
+
+    "Todo"
 
     def __init__(self):
         Object.__init__(self)
@@ -25,6 +28,7 @@ class Todo(Object):
 
 
 def dne(event):
+    "flag todo as done."
     if not event.args:
         event.reply("dne <txt>")
         return
@@ -41,6 +45,7 @@ def dne(event):
 
 
 def tdo(event):
+    "add todo."
     if not event.rest:
         nmr = 0
         for fnm, obj in find('todo'):

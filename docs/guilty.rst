@@ -10,15 +10,7 @@
 
 .. raw:: html
 
-    <center>
-    <b>
-
-**GUILTY**
-
-.. raw:: html
-
-    </b>
-    </center>
+    <center><b>GUILTY</b></center>
     <br>
 
 

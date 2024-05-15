@@ -2,13 +2,12 @@
 requires = ["setuptools>=43.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
-
 [project]
 name = "sbn"
-description = "Skull, Bones and Number (OTP-CR-117/19)"
-version = "92"
+description = "Reconsider OTP-CR-117/19"
+version = "98"
 authors = [
-    {name = "OTP-CR-117/19", email = "skullbonesandnumer@gmail.com" },
+    {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
 readme = "README.rst"
 license = { text="Public Domain"}
@@ -24,8 +23,8 @@ classifiers=[
 dev = []
 
 [project.scripts]
-sbn = "sbn.__main__:wrapped"
-sbnd = "sbn.__main__:daemoned"
+"sbn"  = "sbn.__main__:wrapped"
+"sbnd" = "sbn.__main__:daemoned"
 
 
 [project.urls]
@@ -44,19 +43,15 @@ zip-safe = true
 
 [tool.setuptools.data-files]
 "share/doc/sbn" = [
+    "README.rst",
+    "docs/genocide.png",
     "docs/about.rst",
-    "docs/arrest.png",
     "docs/conf.py",
     "docs/ECHAhaldol.png",
     "docs/evidence.rst",
-    "docs/genocide.png",
     "docs/informed.jpg",
     "docs/OTP1.png",
-    "docs/reconsider.rst",
-    "docs/skull.jpg",
     "docs/source.rst",
-    "docs/verbatim2.png",
-    "docs/banner.png",
     "docs/ECHAabilify.png",
     "docs/ECHAzyprexa.png",
     "docs/guilty.rst",
@@ -64,14 +59,12 @@ zip-safe = true
     "docs/OTP2.png",
     "docs/request.rst",
     "docs/skull3.png",
-    "docs/verbatim.rst",
     "docs/writings.rst",
     "docs/bevestigd.jpg",
     "docs/ECHAclozapine.png",
-    "docs/wallpaper.png",
     "docs/index.rst",
     "docs/manual.rst",
-    "docs/wallpaper.png",
+    "docs/robots.txt"
 ]
 
 "share/doc/sbn/_static" = [
@@ -80,10 +73,11 @@ zip-safe = true
 
 "share/doc/sbn/pdf" =  [
     "docs/pdf/bevestigd.pdf",
+    "docs/pdf/EM_Ack_OTP-CR-117_19.pdf",
     "docs/pdf/EM_T04_OTP-CR-117_19.pdf",
     "docs/pdf/EM_T07_OTP-CR-117_19_001.pdf",
     "docs/pdf/Kamer.pdf",
-    "docs/pdf/Rome-Statute.pdf",
+    "docs/pdf/Rome-Statute.pdf"
 ]
 
 "share/doc/sbn/_templates" = [

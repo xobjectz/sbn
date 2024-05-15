@@ -5,7 +5,7 @@
 "stub"
 
 
-__author__ = "OTP-CR-117/19 <skullbonesandnumber@gmail.com>"
+__author__ = "Bart Thate <bthate@dds.nl>"
 
 
 import setuptools

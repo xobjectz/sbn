@@ -1,6 +1,4 @@
 # This file is placed in the Public Domain.
-#
-# pylint: disable=R,C,E0402
 
 
 "log text"
@@ -9,10 +7,15 @@
 import time
 
 
-from .. import Object, find, fntime, laps, sync
+from ..client import laps
+from ..disk   import sync
+from ..find   import find, fntime
+from ..object import Object
 
 
-class Log(Object):
+class Log(Object): # pylint: disable=R0903
+
+    "Log"
 
     def __init__(self):
         super().__init__()
@@ -20,6 +23,7 @@ class Log(Object):
 
 
 def log(event):
+    "log text."
     if not event.rest:
         nmr = 0
         for fnm, obj in find('log'):

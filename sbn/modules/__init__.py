@@ -1,30 +1,27 @@
 # This file is placed in the Public Domain.
 #
-#
+# pylint: disable=W0406
 
 
 "modules"
 
 
-from . import cmd, irc, log, mdl, mod, mre, pwd, req, rss, slg, tdo, wsd
-from . import flt, thr
+from . import cmd, err, mod, thr, irc, log, req, rss, slg, tdo, tmr
+
 
 def __dir__():
     return (
         'cmd',
-        'flt',
+        'err',
         'irc',
         'log',
         'mod',
-        'mdl',
-        'mre',
-        'pwd',
         'req',
         'rss',
         'slg',
         'tdo',
         'thr',
-        'wsd'
+        'tmr',
     )
 
 

@@ -1,6 +1,5 @@
 .. _manual:
 
-
 .. raw:: html
 
     <br>
@@ -10,21 +9,12 @@
 
 .. raw:: html
 
-    <center>
-    <b>
-
-**MANUAL**
-
-.. raw:: html
-
-    </b>
-    </center>
+    <center><b>MANUAL</b></center>
     <br>
-
 
 **NAME**
 
-    **SBN** - Skull, Bones and Number (OTP-CR-117/19)
+    ``SBN``  --  Skull, Bones and Number (OTP-CR-117/19)
 
 
 **INSTALL**
@@ -33,19 +23,21 @@
 ::
 
     $ pipx install sbn
+    $ pipx ensurepath
 
 
 **SYNOPSIS**
 
 ::
 
-    sbn <cmd> [key=val] [key==val]
-    sbn [-a] [-c] [-d] [-v]
+    sbn  <cmd> [key=val] [key==val]
+    sbn  [-a] [-c] [-v]
+    sbnd [-v]
 
 
 **DESCRIPTION**
 
-    **SBN** holds evidence that king
+    ``SBN`` holds evidence that king
     netherlands is doing a genocide, a
     written response where king
     netherlands confirmed taking note
@@ -59,17 +51,16 @@
     torture and kills members of the
     victim groups :ref:`. <source>`
 
-    **SBN** contains :ref:`correspondence <writings>`
-    with the International Criminal Court,
-    asking for arrest of the king of
-    the netherlands, for the genocide
-    he is committing with his new
-    treatement laws.
+    ``SBN`` contains :ref:`correspondence
+    <writings>` with the International Criminal
+    Court, asking for arrest of the king of the
+    netherlands, for the genocide he is committing
+    with his new treatement laws.
 
-    Current status is "no basis to proceed" 
-    :ref:`judgement <guilty>` of the prosecutor
-    which requires a "basis to prosecute" to
-    have the king actually arrested.
+    Current status is a :ref:`"no basis to proceed"
+    <writings>` judgement of the prosecutor which
+    requires a :ref:`"basis to prosecute" <reconsider>`
+    to have the king actually arrested.
 
 
 **USAGE**
@@ -86,7 +77,7 @@
     ::
 
         $ sbn cmd
-        cfg,cmd,mre,now,pwd
+        cmd,dne,err,log,mod,req,tdo,thr,tmr
 
 
     start a console
@@ -101,7 +92,7 @@
     ::
 
         $ sbn -cv
-        SBN started CV started Sat Dec 2 17:53:24 2023
+        May 12 05:51:49 2024 GENOCIDE CV CMD,ERR,LOG,MOD,REQ,TDO,THR,TMR
         >
 
     start daemon
@@ -123,13 +114,6 @@
         2500 CM The Hague
         The Netherlands
 
-    show how many died in the WvGGZ
-
-    ::
-
-        $ sbn now
-        4y18d patient #47324 died from mental illness (14/32/11682) every 44m59s
-    
 
 **CONFIGURATION**
 
@@ -165,15 +149,13 @@
         cfg - irc configuration
         cmd - commands
         mre - displays cached output
-        now - show genocide stats
         pwd - sasl nickserv name/pass
         req - reconsider
-        wsd - show wisdom
 
 
 **SYSTEMD**
 
-    save the following it in /etc/systems/system/sbn.service
+    save the following it in /etc/systemd/system/sbn.service
     and replace "<user>" with the user running pipx
 
     ::
@@ -192,7 +174,7 @@
         RemainAfterExit=yes
 
         [Install]
-        WantedBy=multi-user.target
+        WantedBy=default.target
 
 
     then run this
@@ -205,6 +187,11 @@
     default channel/server is #sbn on localhost
 
 
+**SOURCE**
+
+    source is :ref:`here <source>`
+
+
 **FILES**
 
     ::
@@ -215,17 +202,11 @@
         ~/.local/pipx/venvs/sbn/
 
 
-**SOURCE**
-
-
-   source code is :ref:`here <source>`
-
-
 **AUTHOR**
 
     ::
 
-        OTP-CR-117/19  <skullbonesandnumber@gmail.com>
+        Bart Thate <bthate@dds.nl>
 
 
 **COPYRIGHT**

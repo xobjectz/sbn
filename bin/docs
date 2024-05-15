@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
-#
-# pylint: disable=C0116,C0209,R1732,C0301
 
 
-"create sphinx envirnment"
+"create docs"
 
 
+import os
 import subprocess
 import sys
+
+
+NAME = os.getcwd().split(os.sep)[-1]
 
 
 TXT = '''
@@ -63,7 +65,27 @@ urllib3==2.0.3
 '''
 
 
+curdir = os.getcwd()
+
+
+os.environ["PATH"] = ":./bin" + os.environ["PATH"]
+
+
 def popen(txt):
+    "run commands"
+    with subprocess.Popen(
+                            txt.split(),
+                            stdin=sys.stdin,
+                            stdout=sys.stdout,
+                            stderr=sys.stderr,
+                            close_fds=False,
+                            text=True
+                           ) as proc:
+        proc.communicate()
+        proc.wait()
+
+
+def popen2(txt):
     proc = subprocess.Popen(
                             txt,
                             stdin=sys.stdin,
@@ -77,4 +99,8 @@ def popen(txt):
     proc.wait()
 
 
-popen("env/bin/python3 env/bin/pip3 install -I %s" % " ".join([f"{x}" for x in TXT.split("\n") if "#" not in x]))
+popen('python3 setup.py sdist')
+popen("python3 -mvirtualenv --system-site-packages env")
+popen("env/bin/pip3 install %s -f dist --upgrade" % NAME)
+popen2("env/bin/python3 env/bin/pip3 install -I %s" % " ".join([f"{x}" for x in TXT.split("\n") if "#" not in x]))
+popen("env/bin/python3 env/bin/sphinx-build docs html")

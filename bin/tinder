@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 #
-# pylint: disable=R,C,W0718,W0611,W0613,E0102,E0401,E0611,W0201,W0702,W0603
+# pylint: disable=C,R,W0105
 
 
 "created clients"
 
 
-import inspect
 import os
 import profile
-import random
 import shutil
 import sys
 import termios
@@ -21,9 +19,18 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from sbn import Client, Command, Default, Error, Event, Object
-from sbn import Storage, modules, scan
-from sbn import keys, laps, launch, parse_command, spl
+from sbn.client  import Client
+from sbn.default import Default
+from sbn.errors  import Errors, debug
+from sbn.event   import Event
+from sbn.object  import Object, keys
+from sbn.parser  import parse_cmd
+from sbn.thread  import launch
+from sbn.utils   import laps
+from sbn.workdir import Workdir
+
+
+from sbn import modules
 
 
 STARTTIME = time.time()
@@ -31,20 +38,22 @@ STARTTIME = time.time()
 
 Cfg = Default()
 Cfg.debug = True
-Cfg.mod =  ",".join(modules.__dir__())
 Cfg.name = "tinder"
 Cfg.silent = False
 Cfg.skip = ["debug",]
-Cfg.version = "60"
+Cfg.version = "110"
 Cfg.wd = ".test"
-
-
-Storage.wd = Cfg.wd
+Workdir.workdir = Cfg.wd
 
 
 paylock = _thread.allocate_lock()
 
+
 events = []
+LAP = 1
+NRS = 1
+NRCOMMAND = 1
+PERCALL = 1
 
 
 param = Object()
@@ -59,26 +68,27 @@ param.dpl = ["hnrss title,summary,link"]
 param.mre = ["2"]
 param.nme = ["hnrss hackernews"]
 param.pwd = ["bart bla"]
-param.rem = ["hnrss"]
+#param.rem = ["hnrss"]
 param.rss = ["http://hnrss.org/newest"]
 param.ver = [""]
 
 
 class CLI(Client):
 
-    def say(self, channel, txt):
+    "CLI"
+
+    def say(self, _channel, txt):
         if "v" not in Cfg.opts:
             return
         cprint(txt)
 
 
 def consume(evts):
+    "wait for events."
     fixed = []
     res = []
     for evt in evts:
         res.append(evt.wait())
-        if "v" in Cfg.opts and not evt.result:
-            print(f"no result for {evt.cmd}")
         fixed.append(evt)
     for fff in fixed:
         try:
@@ -89,13 +99,15 @@ def consume(evts):
 
 
 def cprint(txt):
+    "flush on print."
     print(txt.encode('utf-8', 'replace').decode())
     sys.stdout.flush()
 
 
-def payload(clt) -> None:
-    cmds = list(keys(Command.cmds))
-    random.shuffle(cmds)
+def payload(clt):
+    "do payload."
+    cmds = sorted(list(keys(Client.cmds)))
+    #random.shuffle(cmds)
     with paylock:
         nmr = 0
         for cmd in cmds:
@@ -110,7 +122,8 @@ def payload(clt) -> None:
         return nmr
 
 
-def wrap(func) -> None:
+def wrap(func):
+    "reset terminal."
     old2 = None
     try:
         old2 = termios.tcgetattr(sys.stdin.fileno())
@@ -125,40 +138,37 @@ def wrap(func) -> None:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old2)
 
 
-lap = 1
-nrs = 1
-nrcommand = 1
-percall = 1
-
-
-def main() -> None:
-    global lap
-    global nrs
-    global nrcommand
-    global percall
-    Error.output = cprint
-    for mod in scan(modules, Cfg.mod):
-        mod.DEBUG = True
+def main():
+    "main"
+    Errors.output = cprint
+    modules.rss.DEBUG = True
     nrs = Cfg.index or 1
-    nrcommand = len(Command.cmds) or 1
+    nrcommand = len(Client.cmds) or 1
+    thrs = []
     cli = CLI()
+    cli.raw = print
     cli.start()
     for _nr in range(nrs):
-        launch(payload, cli)
+        thrs.append(launch(payload, cli))
+    for thr in thrs:
+        thr.join()
     consume(events)
     endtime = time.time()
-    lap = laps(endtime - STARTTIME)
-    percall = (endtime - STARTTIME)/(nrs * nrcommand)
+    lap = laps(endtime-STARTTIME)
+    percall = (endtime-STARTTIME)/(nrs*nrcommand)
+    print(f"{lap} {nrs} {nrcommand} {percall}")
 
 
 if __name__ == "__main__":
-    if os.path.exists(Storage.wd):
-        shutil.rmtree(Storage.wd)
-    Storage.skel()
-    parse_command(Cfg, " ".join(sys.argv[1:]))
+    if os.path.exists(Workdir.workdir):
+        shutil.rmtree(Workdir.workdir)
+    Workdir.skel()
+    parse_cmd(Cfg, " ".join(sys.argv[1:]))
+    dte = time.ctime(time.time()).replace("  ", " ")
+    debug(f"{Cfg.name.upper()} {Cfg.opts.upper()} started {dte}")
+    Cfg.mod =  ",".join(modules.__dir__())
     if "p" in Cfg.opts:
         profile.runctx(main.__code__, globals(), locals())
     else:
         wrap(main)
-    Error.show()
-    print(f"{lap} {nrs} {nrcommand} {percall}")
+    Errors.show()

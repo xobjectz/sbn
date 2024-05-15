@@ -6,17 +6,10 @@
 
 .. title:: Evidence
 
-.. raw:: html
-
-    <center>
-    <b>
-
-**EVIDENCE**
 
 .. raw:: html
 
-    </b>
-    </center>
+    <center><b>EVIDENCE</b></center>
     <br>
 
 

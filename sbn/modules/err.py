@@ -1,22 +1,17 @@
 # This file is placed in the Public Domain.
-#
-# pylint: disable=C,R,E0402
 
 
-"status of bots"
+"deferred exception handling"
 
 
-from .. import Error, Fleet
+from ..thread import Errors, formatexc
 
 
 def err(event):
+    "show errors."
     nmr = 0
-    for bot in Fleet.objs:
-        if 'state' in dir(bot):
-            event.reply(str(bot.state))
-            nmr += 1
-    event.reply(f"status: {nmr} errors: {len(Error.errors)}")
-    for exc in Error.errors:
-        txt = Error.format(exc)
+    event.reply(f"status: {nmr} errors: {len(Errors.errors)}")
+    for exc in Errors.errors:
+        txt = formatexc(exc)
         for line in txt.split():
             event.reply(line)

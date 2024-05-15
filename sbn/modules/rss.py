@@ -1,6 +1,4 @@
 # This file is placed in the Public Domain.
-#
-# pylint: disable=C,R,W0201,W0612,E0402
 
 
 "rich site syndicate"
@@ -18,12 +16,16 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from .. import Default, Object, fmt, update
-from .. import Fleet, Repeater
-from .. import fntime, find, launch, laps, last, sync
+from ..client import laps
+from ..disk   import sync
+from ..find   import find, fntime, last
+from ..object import Default, Object, fmt, update, values
+from ..run    import broker, spl
+from ..thread import Repeater, launch
 
 
 def init():
+    "start fetcher."
     fetcher = Fetcher()
     fetcher.start()
     return fetcher
@@ -35,19 +37,32 @@ DEBUG = False
 fetchlock = _thread.allocate_lock()
 
 
-class Feed(Default):
+TEMPLATE = """<opml version="1.0">
+    <head>
+        <title>rssbot opml</title>
+    </head>
+    <body>
+        <outline title="rssbot opml" text="24/7 feed fetcher">"""
 
-    pass
+
+class Feed(Default): # pylint: disable=R0903
+
+    "Feed"
 
 
-class Rss(Default):
+class Rss(Default): # pylint: disable=R0903
+
+    "Rss"
 
     def __init__(self):
         Default.__init__(self)
         self.display_list = 'title,link,author'
+        self.rss          = ''
 
 
-class Seen(Default):
+class Seen(Default): # pylint: disable=R0903
+
+    "Seen"
 
     def __init__(self):
         Default.__init__(self)
@@ -56,12 +71,16 @@ class Seen(Default):
 
 class Fetcher(Object):
 
-    dosave = False
-    seen = Seen()
-    seenfn = None
+    "Fetcher"
+
+    def __init__(self):
+        self.dosave = False
+        self.seen = Seen()
+        self.seenfn = None
 
     @staticmethod
     def display(obj):
+        "display object."
         result = ''
         displaylist = []
         try:
@@ -82,94 +101,177 @@ class Fetcher(Object):
         return result[:-2].rstrip()
 
     def fetch(self, feed):
+        "fetch feed."
         with fetchlock:
             counter = 0
             result = []
-            for obj in reversed(list(getfeed(feed.rss, feed.display_list))):
+            for obj in reversed(getfeed(feed.rss, feed.display_list)):
                 fed = Feed()
                 update(fed, obj)
                 update(fed, feed)
-                if 'link' in fed:
-                    url = urllib.parse.urlparse(fed.link)
-                    if url.path and not url.path == '/':
-                        uurl = f'{url.scheme}://{url.netloc}/{url.path}'
-                    else:
-                        uurl = fed.link
-                    if uurl in Fetcher.seen.urls:
-                        continue
-                    Fetcher.seen.urls.append(uurl)
+                url = urllib.parse.urlparse(fed.link)
+                if url.path and not url.path == '/':
+                    uurl = f'{url.scheme}://{url.netloc}/{url.path}'
+                else:
+                    uurl = fed.link
+                if uurl in self.seen.urls:
+                    continue
+                self.seen.urls.append(uurl)
                 counter += 1
                 if self.dosave:
                     sync(fed)
                 result.append(fed)
         if result:
-            sync(Fetcher.seen, Fetcher.seenfn)
+            sync(self.seen, self.seenfn)
         txt = ''
         feedname = getattr(feed, 'name', None)
         if feedname:
             txt = f'[{feedname}] '
         for obj in result:
             txt2 = txt + self.display(obj)
-            for bot in Fleet.objs:
+            for bot in values(broker.objs):
                 if "announce" in dir(bot):
                     bot.announce(txt2.rstrip())
         return counter
 
     def run(self):
+        "fetch all feeds."
         thrs = []
-        for fnm, feed in find('rss'):
+        for _fn, feed in find('rss'):
             thrs.append(launch(self.fetch, feed, name=f"{feed.rss}"))
         return thrs
 
     def start(self, repeat=True):
-        Fetcher.seenfn = last(Fetcher.seen)
+        "start fetcher."
+        self.seenfn = last(self.seen)
         if repeat:
             repeater = Repeater(300.0, self.run)
             repeater.start()
 
 
-class Parser(Object):
+class Parser:
+
+    "Parser"
 
     @staticmethod
-    def getitem(line, item):
+    def getvalue(line, attr):
+        "retrieve attribute value."
         lne = ''
-        try:
-            index1 = line.index(f'<{item}>') + len(item) + 2
-            index2 = line.index(f'</{item}>')
-            lne = line[index1:index2]
-            if 'CDATA' in lne:
-                lne = lne.replace('![CDATA[', '')
-                lne = lne.replace(']]', '')
-                lne = lne[1:-1]
-        except ValueError:
-            lne = None
+        index1 = line.find(f'{attr}="')
+        if index1 == -1:
+            return lne
+        index1 += len(attr) + 2
+        index2 = line.find('"', index1)
+        if index2 == -1:
+            index2 = line.find('"/>', index1)
+        if index2 == -1:
+            return lne
+        lne = line[index1:index2]
+        if 'CDATA' in lne:
+            lne = lne.replace('![CDATA[', '')
+            lne = lne.replace(']]', '')
+            #lne = lne[1:-1]
         return lne
 
     @staticmethod
-    def parse(txt, item='title,link'):
+    def getattrs(line, token):
+        "split for attributes."
+        result = ""
+        index1 = line.find(f'<{token} ')
+        if index1 == -1:
+            return result
+        index1 += len(token) + 2
+        index2 = line.find('/>', index1)
+        if index2 == -1:
+            return result
+        result = line[index1:index2]
+        return result.strip()
+
+    @staticmethod
+    def getitem(line, item):
+        "match items."
+        lne = ''
+        index1 = line.find(f'<{item}>')
+        if index1 == -1:
+            return lne
+        index1 += len(item) + 2
+        index2 = line.find(f'</{item}>', index1)
+        if index2 == -1:
+            return lne
+        lne = line[index1:index2]
+        if 'CDATA' in lne:
+            lne = lne.replace('![CDATA[', '')
+            lne = lne.replace(']]', '')
+            lne = lne[1:-1]
+        return lne.strip()
+
+    @staticmethod
+    def getitems(text, token):
+        "loop for items."
+        index = 0
         result = []
-        for line in txt.split('<item>'):
+        stop = False
+        while not stop:
+            index1 = text.find(f'<{token}', index)
+            if index1 == -1:
+                break
+            index1 += len(token) + 2
+            index2 = text.find(f'</{token}>', index1)
+            if index2 == -1:
+                break
+            lne = text[index1:index2]
+            result.append(lne)
+            index = index2
+        return result
+
+    @staticmethod
+    def parse(txt, toke="item", items='title,link'):
+        "parse a text for tokens."
+        result = []
+        for line in Parser.getitems(txt, toke):
             line = line.strip()
-            obj = Object()
-            for itm in item.split(","):
-                setattr(obj, itm, Parser.getitem(line, itm))
+            obj = Default()
+            for itm in spl(items):
+                val = Parser.getitem(line, itm)
+                if val:
+                    val = unescape(val.strip())
+                    val = val.replace("\n", "")
+                    val = striphtml(val)
+                    setattr(obj, itm, val)
+                else:
+                    att = Parser.getattrs(line, toke)
+                    if not att:
+                        continue
+                    if itm == "link":
+                        itm = "href"
+                    val = Parser.getvalue(att, itm)
+                    if not val:
+                        continue
+                    if itm == "href":
+                        itm = "link"
+                    setattr(obj, itm, val.strip())
             result.append(obj)
         return result
 
 
-def getfeed(url, item):
+def getfeed(url, items):
+    "fetch a feed."
+    result = [Object(), Object()]
     if DEBUG:
-        return [Object(), Object()]
+        return result
     try:
-        result = geturl(url)
+        rest = geturl(url)
     except (ValueError, HTTPError, URLError):
-        return [Object(), Object()]
-    if not result:
-        return [Object(), Object()]
-    return Parser.parse(str(result.data, 'utf-8'), item)
-
+        return result
+    if rest:
+        if url.endswith('atom'):
+            result = Parser.parse(str(rest.data, 'utf-8'), 'entry', items) or []
+        else:
+            result = Parser.parse(str(rest.data, 'utf-8'), 'item', items) or []
+    return result
 
 def gettinyurl(url):
+    "fetch a tinyurl."
     postarray = [
         ('submit', 'submit'),
         ('url', url),
@@ -188,6 +290,7 @@ def gettinyurl(url):
 
 
 def geturl(url):
+    "fetch a url."
     if not url.startswith("http://") and not url.startswith("https://"):
         return ""
     url = urllib.parse.urlunparse(urllib.parse.urlparse(url))
@@ -199,37 +302,56 @@ def geturl(url):
 
 
 def striphtml(text):
+    "strip html."
     clean = re.compile('<.*?>')
     return re.sub(clean, '', text)
 
 
 def unescape(text):
+    "unescape text."
     txt = re.sub(r'\s+', ' ', text)
     return html.unescape(txt)
 
 
 def useragent(txt):
+    "return useragent."
     return 'Mozilla/5.0 (X11; Linux x86_64) ' + txt
 
 
 def dpl(event):
+    "set display items."
     if len(event.args) < 2:
         event.reply('dpl <stringinurl> <item1,item2>')
         return
     setter = {'display_list': event.args[1]}
-    for fnm, feed in find('rss', {'rss': event.args[0]}):
+    for _fn, feed in find('rss', {'rss': event.args[0]}):
         if feed:
             update(feed, setter)
             sync(feed)
     event.reply('ok')
 
 
+def exp(event):
+    "export to opml."
+    event.reply(TEMPLATE)
+    nrs = 0
+    for _fn, obj in find("rss"):
+        nrs += 1
+        name = obj.name or f"url{nrs}"
+        txt = f'<outline name={name} display_list={obj.display_list} xmlUrl="{obj.rss}"/>'
+        event.reply(" "*12 + txt)
+    event.reply(" "*8 + "</outline>")
+    event.reply("    <body>")
+    event.reply("</opml>")
+
+
 def nme(event):
+    "set name of feed."
     if len(event.args) != 2:
         event.reply('nme <stringinurl> <name>')
         return
     selector = {'rss': event.args[0]}
-    for fnm, feed in find('rss', selector):
+    for _fn, feed in find('rss', selector):
         if feed:
             feed.name = event.args[1]
             sync(feed)
@@ -237,6 +359,7 @@ def nme(event):
 
 
 def rem(event):
+    "remove a feed."
     if len(event.args) != 1:
         event.reply('rem <stringinurl>')
         return
@@ -249,6 +372,7 @@ def rem(event):
 
 
 def res(event):
+    "restore a feed."
     if len(event.args) != 1:
         event.reply('res <stringinurl>')
         return
@@ -261,6 +385,7 @@ def res(event):
 
 
 def rss(event):
+    "add a feed."
     if not event.rest:
         nrs = 0
         for fnm, feed in find('rss'):

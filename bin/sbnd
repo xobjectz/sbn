@@ -1,1 +1,1 @@
-python3 -m sbn -d $* ;
+python3 -m sbn -d

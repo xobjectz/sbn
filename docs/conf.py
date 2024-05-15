@@ -5,11 +5,11 @@
 # ruff: noqa: E402, E501
 
 
-"Skull, Bones and Number (OTP-CR-117/19)"
+"Reconsider OTP-CR-117/19"
 
 
 NAME = "sbn"
-VERSION = "41"
+VERSION = "99"
 
 
 import os
@@ -60,7 +60,7 @@ extensions = [
 # -- Options for HTML output -------------------------------------------------
 
 
-html_title = "Skull, Bones and Numner (OTP-CR-117/19)"
+html_title = "Reconsider OTP-CR-117/19"
 html_style = 'sbn.css'
 html_static_path = ["_static"]
 html_css_files = ["sbn.css",]
@@ -87,7 +87,7 @@ html_theme_options = {
     'show_relbar_top': False,
     'sidebar_width': 10,
 }
-html_favicon = "skull.jpg"
+html_favicon = "skull3.png"
 html_extra_path = []
 html_last_updated_fmt = '%Y-%b-%d'
 html_additional_pages = {}
@@ -114,17 +114,22 @@ rst_prolog = '''.. image:: genocide.png
     :height: 2.6cm
     :target: index.html
 
+.. raw:: html
+
+    <center>
+    <i>
+    By law, with the use of poison, killing, torturing, castrating, destroying in whole or in part,
+    </i>
+    </center>
 '''
 
 rst_epilog = '''.. raw:: html
 
     <br>
-    <br>
-    <br>
     <center>
     <b>
 
-:ref:`about <about>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` -  :ref:`writings <writings>`
+:ref:`home <reconsider>` - :ref:`manual <manual>` - :ref:`evidence <evidence>` - :ref:`guilty <guilty>` - :ref:`writings <writings>` - :ref:`about <about>`
 
 
 .. raw:: html

@@ -1,18 +1,22 @@
 .. _{{ fullname }}:
 
 
+.. raw:: html
+
+    <br>
+
 .. title:: {{ fullname }}
 
 .. raw:: html
 
-    <br>
     <center>
+    <h2>
 
-**{{ fullname }}**
+{{ fullname }}
 
 .. raw:: html
 
-    <br>
+    </h2>
     </center>
 
 .. auto{{ objtype }}:: {{ fullname }}
